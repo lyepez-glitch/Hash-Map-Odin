@@ -9,16 +9,16 @@ class LinkedList {
     test() {
         console.log('test')
     }
-    append(value) {
+    append(key, value) {
         if (this.head === null) {
-            let newNode = new Node(value);
+            let newNode = new Node(key, value);
             this.head = newNode;
             this.tail = newNode;
         } else {
             let curr = this.head;
             while (curr !== null) {
                 if (curr.next === null) {
-                    curr.next = new Node(value);
+                    curr.next = new Node(key, value);
                     curr.next.next = null;
                     this.tail = curr.next;
                     return;
@@ -27,11 +27,11 @@ class LinkedList {
             }
         }
     }
-    prepend(value) {
+    prepend(key, value) {
         if (!this.head) {
-            this.head = value;
+            this.head = new Node(key, value);
         } else {
-            let newNode = new Node(value);
+            let newNode = new Node(key, value);
             newNode.next = this.head;
             this.head = newNode;
         }
@@ -46,22 +46,23 @@ class LinkedList {
         return count;
     }
     getHead() {
-        return this.head.data;
+        return this.head;
     }
     getTail() {
-        return this.tail.data;
+        return this.tail;
     }
     at(index) {
         let count = 0;
         let curr = this.head;
         while (curr !== null) {
             if (count === index) {
-                return curr.data;
+                return curr;
             }
             count++;
 
         }
     }
+
     pop() {
         let popped;
         let curr = this.head;
@@ -76,10 +77,10 @@ class LinkedList {
             }
         }
     }
-    contains(value) {
+    contains(key, value) {
         let curr = this.head;
         while (curr !== null) {
-            if (curr.data === value) {
+            if (curr.data === value && curr.key === key) {
                 return true;
             } else {
                 curr = curr.next;
@@ -87,13 +88,42 @@ class LinkedList {
         }
         return false;
     }
-    find(value) {
+
+    update(key, val) {
+        let curr = this.head;
+
+        while (curr !== null) {
+            if (curr.key === key) {
+                curr.data = val;
+            }
+            curr = curr.next;
+
+        }
+        return null;
+    }
+
+    remove(key) {
+        let curr = this.head;
+        let prev;
+        while (curr !== null) {
+            if (curr.key === key) {
+                prev.next = curr.next;
+                return 'removed';
+            }
+            curr = curr.next;
+            prev = curr;
+
+        }
+        return null;
+    }
+
+    find(key) {
         let curr = this.head,
             count = 0;
 
         while (curr !== null) {
-            if (curr.data === value) {
-                return count;
+            if (curr.key === key) {
+                return curr;
             }
             curr = curr.next;
             count++;
@@ -101,13 +131,15 @@ class LinkedList {
         return null;
     }
 
+
+
     toString() {
         let curr = this.head;
         let str = "";
 
         while (curr !== null) {
             console.log('curr', curr.data, curr.next);
-            str += '(' + curr.data + ')';
+            str += '(' + curr.key + ', ' + curr.data + ')';
             if (curr.next !== null) {
                 str += '->';
             }
