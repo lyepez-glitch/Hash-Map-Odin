@@ -14,3 +14,12 @@ map.set('dog', 'herman');
 map.set('wolf', 'wolfy');
 map.set('wolf', 'updated');
 console.log('entries', map.entries());
+////////////////////////////
+
+map.set('bat', 'batty')
+map.set('tab', 'tabby')
+map.set('tab', 'froggy')
+console.log('updated bta =>', map.get('tab'));
+map.get('tab')
+console.log('remove bta', map.remove('tab'));
+console.log(' bta should be removed =>', map.get('tab'));

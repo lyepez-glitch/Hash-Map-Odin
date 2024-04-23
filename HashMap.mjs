@@ -5,6 +5,8 @@ class HashMap {
         this.count = 0;
         this.items = {};
         this.loadFactor = 0.75;
+        this.filledBuckets = 0;
+        this.indexes = {};
     }
     hash(key) {
         let hashCode = 0;
@@ -18,48 +20,79 @@ class HashMap {
         return hashCode;
     }
     set(key, value) {
+
+
         let hashIndex = this.hash(key);
-        const foundKey = this.map[hashIndex];
-        // if key already exists
-        // update with new value
+        console.log(25, hashIndex, key)
+
+        let foundKey = this.map[hashIndex];
+
+
+
         if (foundKey instanceof LinkedList) {
-            const foundEntry = foundKey.find(key, value);
+            const foundEntry = foundKey.find(key);
+            console.log(33, foundEntry)
             if (foundEntry) {
-                //create update method in linkedlist
+
                 foundKey.update(key, value);
                 this.items[key] = value;
 
+
             } else {
-                this.count++;
+
+
                 this.items[key] = value;
 
-                const newList = new LinkedList();
-                newList.append(key, value);
-                this.map[hashIndex].push(newList);
+                this.map[hashIndex].append(key, value);
+
             }
         } else if (foundKey) {
-            foundKey = value;
+            const ogKey = this.indexes[hashIndex];
+            console.log(48, ogKey, key)
+
+            if (ogKey !== key) {
+                const newList = new LinkedList();
+                newList.append(ogKey, this.map[hashIndex])
+                newList.append(key, value);
+                this.map[hashIndex] = newList;
+
+            } else {
+                this.map[hashIndex] = value;
+                this.items[key] = value;
+            }
+
+
         } else if (!foundKey) {
+            console.log(63, key)
             this.map[hashIndex] = value;
+            this.items[key] = value;
+            this.indexes[hashIndex] = key;
+            // console.log(59, this.map[hashIndex], hashIndex)
             this.count++;
         }
-        let mapSize = this.loadFactor * this.map.length;
-        if (this.map.length >= mapSize) {
+
+        let capacity = this.length() / this.map.length;
+        if (capacity >= this.loadFactor) {
+            console.log(72)
             const doubleSize = 2 * this.map.length;
             const newArr = new Array(doubleSize);
-            this.map.forEach((item) => {
-                newArr.push(item)
+
+            this.map.forEach((item, index) => {
+                newArr[index] = item;
             })
+
             this.map = newArr;
 
         }
-        // check if bucket has reached loadfactor if so grow siz
-        //some of the mehtods may help with this
+
     }
+
     get(key) {
         const hashedIndex = this.hash(key);
         const found = this.map[hashedIndex];
+
         if (found instanceof LinkedList) {
+            console.log('entire linkedlist ', found.toString());
             const foundNode = found.find(key);
             if (foundNode) {
                 return foundNode.data;
@@ -68,8 +101,7 @@ class HashMap {
         } else if (found) {
             return found;
         }
-        // return val associated to tis key
-        // if key not found return null
+
         return null;
     }
     has(key) {
@@ -77,35 +109,42 @@ class HashMap {
         if (this.map[hashedIndex])
             return true;
         return false;
-        // if key is in the hash mpa return true
-        // else return false
+
     }
+
     remove(key) {
-        // if key is in hash map
+
         const hashedIndex = this.hash(key);
         const found = this.map[hashedIndex];
         if (found instanceof LinkedList) {
+            console.log(120, found)
             found.remove(key);
+            console.log(122, found)
+            this.count--;
+            delete this.items[key];
             return true;
         } else if (found) {
+            this.count--;
+            delete this.items[key];
             this.map.splice(hashedIndex, 1);
             return true;
         } else {
             return false;
         }
-        // remove the key and val and return true
-        // else if not found return false
+
     }
     length() {
-        // return count of keys in hash map
+
         return this.count;
     }
     clear() {
         this.map.splice(0, this.map.length);
-        //removes all keys and vals in the hash map
+        this.count = 0;
+        this.items = {};
+
     }
     keys() {
-        //returns array of all keys in hash map
+
         let keys = [];
         for (const key in this.items) {
             keys.push(key);
@@ -114,7 +153,7 @@ class HashMap {
 
     }
     values() {
-        // returns array of all vals in hash map
+
         let values = [];
         for (const key in this.items) {
             values.push(this.items[key]);
@@ -122,10 +161,10 @@ class HashMap {
         return values;
     }
     entries() {
-        // returns array with every key and val pair like [[firstKey, firstValue], [secondKey, secondValue]]
+
         let entries = [];
         for (let key in this.items) {
-            let entry = [key, items[key]];
+            let entry = [key, this.items[key]];
             entries.push(entry);
         }
         return entries;

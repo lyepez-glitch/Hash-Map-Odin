@@ -6,9 +6,7 @@ class LinkedList {
         this.head = null;
         this.tail = null;
     }
-    test() {
-        console.log('test')
-    }
+
     append(key, value) {
         if (this.head === null) {
             let newNode = new Node(key, value);
@@ -103,15 +101,26 @@ class LinkedList {
     }
 
     remove(key) {
+        console.log('key to be removed', key)
         let curr = this.head;
-        let prev;
+        let prev = this.head;
         while (curr !== null) {
+            console.log('curr', curr, key)
             if (curr.key === key) {
-                prev.next = curr.next;
-                return 'removed';
+                console.log(110, curr.key, this.head.key)
+                if (curr.key === this.head.key) {
+                    this.head = curr.next;
+                    curr.next = null;
+                } else {
+                    console.log(115, prev, curr)
+                    prev.next = curr.next;
+                }
+
+
             }
-            curr = curr.next;
+
             prev = curr;
+            curr = curr.next;
 
         }
         return null;
@@ -138,7 +147,6 @@ class LinkedList {
         let str = "";
 
         while (curr !== null) {
-            console.log('curr', curr.data, curr.next);
             str += '(' + curr.key + ', ' + curr.data + ')';
             if (curr.next !== null) {
                 str += '->';
